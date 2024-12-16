@@ -1,4 +1,4 @@
-// Komentarze Doxygen dla pliku MainActivity.java
+
 /**
  * @file MainActivity.java
  * @brief Główna aktywność aplikacji TrackMyBusWAW.
