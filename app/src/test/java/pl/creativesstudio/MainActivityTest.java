@@ -31,10 +31,20 @@ import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.O_MR1)
+/**
+ * Test jednostkowy dla aktywności głównej aplikacji TrackMyBusWAW.
+ * Sprawdza interakcje i poprawność logiki.
+ *
+ * @version 1.1
+ * @since 2024-12-16
+ */
+
 public class MainActivityTest {
     private MainActivity mainActivity;
     private List<Bus> testBuses;
-
+    /**
+     * Inicjalizuje zasoby przed każdym testem.
+     */
     @Before
     public void setUp() {
         mainActivity = new MainActivity();
@@ -71,7 +81,9 @@ public class MainActivityTest {
         bus3.setTime("2024-01-01 12:00:00");
         testBuses.add(bus3);
     }
-
+    /**
+     * Testuje, czy linie autobusowe są poprawnie sortowane.
+     */
     @Test
     public void testSortBusLines() {
         List<String> unsortedLines = new ArrayList<>();
@@ -88,7 +100,9 @@ public class MainActivityTest {
         assertEquals("200", sortedLines.get(2));
         assertEquals("N61", sortedLines.get(3));
     }
-
+    /**
+     * Testuje filtrowanie autobusów w obrębie określonych granic.
+     */
     @Test
     public void testFilterBusesWithinBounds() {
         LatLngBounds mockBounds = LatLngBounds.builder()
@@ -104,6 +118,9 @@ public class MainActivityTest {
         assertNotNull(filteredBuses);
         assertEquals(3, filteredBuses.size());
     }
+    /**
+     * Testuje formatowanie znacznika czasu.
+     */
 
     @Test
     public void testFilterByLine() {
@@ -139,6 +156,9 @@ public class MainActivityTest {
             fail("Exception in testFormatTimestamp: " + e.getMessage());
         }
     }
+/**
+ * Testuje poprawność inicjalizacji mapy.
+ */
 
 //    @Test
 //    public void testOnMapReady() {

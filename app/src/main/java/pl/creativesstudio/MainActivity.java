@@ -1,3 +1,10 @@
+// Komentarze Doxygen dla pliku MainActivity.java
+/**
+ * @file MainActivity.java
+ * @brief Główna aktywność aplikacji TrackMyBusWAW.
+ *
+ * Obsługuje główny interfejs użytkownika oraz podstawowe operacje aplikacji.
+ */
 package pl.creativesstudio;
 
 import android.Manifest;
@@ -41,6 +48,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Główna aktywność aplikacji TrackMyBusWAW.
+ * Odpowiada za wyświetlanie mapy, interakcję użytkownika oraz
+ * zarządzanie danymi pobieranymi z API Warszawa.
+ *
+ * @version 1.0
+ * @since 2024-12-16
+ */
+
+public class MainActivity extends AppCompatActivity {
 public class MainActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
@@ -78,6 +95,20 @@ public class MainActivity extends AppCompatActivity
     private ExecutorService executorService;
     private boolean lineSelected = false;
     List<Bus> allBuses = new ArrayList<>();
+
+    /**
+     * @brief Inicjalizuje interfejs użytkownika.
+     *
+     * Metoda wywoływana podczas uruchomienia aplikacji. Ustawia główny
+     * widok aplikacji i inicjalizuje niezbędne komponenty.
+     *
+     * @param savedInstanceState Stan aplikacji zapisany podczas poprzedniego uruchomienia.
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,6 +273,12 @@ public class MainActivity extends AppCompatActivity
         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
     }
 
+    /**
+     * Funkcja wywoływana po załadowaniu mapy Google.
+     *
+     * @param googleMap Instancja mapy Google.
+     */
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -375,6 +412,10 @@ public class MainActivity extends AppCompatActivity
         }
         return visibleBuses;
     }
+
+    /**
+     * Pobiera dane o autobusach z API Warszawa i aktualizuje widok mapy.
+     */
 
     private void loadBusData(boolean forced) {
         long currentTime = System.currentTimeMillis();

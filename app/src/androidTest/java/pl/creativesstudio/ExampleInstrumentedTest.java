@@ -11,12 +11,21 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * Test instrumentalny dla aplikacji TrackMyBusWAW.
+ * Testuje działanie aplikacji na urządzeniu fizycznym.
  *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ * @author Serhii
+ * @version 1.0
+ * @since 2024-12-16
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
+    /**
+     * Testuje kontekst aplikacji.
+     * Sprawdza, czy aplikacja działa w odpowiednim kontekście systemowym.
+     *
+     * @throws Exception Jeśli wystąpi błąd podczas testu.
+     */
     @Test
     public void useAppContext() {
         // Context of the app under test.

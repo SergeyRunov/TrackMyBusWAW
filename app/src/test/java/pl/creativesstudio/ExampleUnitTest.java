@@ -5,11 +5,16 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Example local unit test, which will execute on the development machine (host).
+ * Test jednostkowy aplikacji TrackMyBusWAW.
+ * Sprawdza poprawność podstawowych operacji.
  *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ * @version 1.1
+ * @since 2024-12-16
  */
 public class  ExampleUnitTest {
+    /**
+     * Testuje poprawność dodawania dwóch liczb.
+     */
     @Test
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
