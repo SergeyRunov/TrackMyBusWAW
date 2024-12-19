@@ -1,13 +1,11 @@
 /**
  * @file BusLinesAdapter.java
- * @brief Adapter for displaying bus lines in a RecyclerView.
+ * @brief Adapter listy linii autobusowych.
  *
- * This adapter manages the display of a list of bus lines within a RecyclerView.
- * It handles the creation and binding of ViewHolder instances that represent each bus line item.
- *
- * @version 1.0
- * @since 2024-12-16
+ * Plik zarządza wyświetlaniem listy linii autobusowych w aplikacji.
  */
+
+
 package pl.creativesstudio;
 
 import android.view.LayoutInflater;
@@ -21,73 +19,71 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 /**
- * Adapter responsible for displaying a list of bus lines
- * in the user interface.
- * Handles views for RecyclerView.
+ * Adapter odpowiedzialny za wyświetlanie listy linii autobusowych
+ * w interfejsie użytkownika.
+ * Obsługuje widoki dla RecyclerView.
  *
+ * @author Serhii
  * @version 1.0
  * @since 2024-12-16
  */
 public class BusLinesAdapter extends RecyclerView.Adapter<BusLinesAdapter.ViewHolder> {
+    public interface ViewHolder {
+    }
 
+    public class BusLinesAdapter extends RecyclerView.Adapter<BusLinesAdapter.ViewHolder> {
     /**
-     * Listener interface for handling click events on bus lines.
+     * Tworzy nowy widok RecyclerView dla elementu listy.
+     *
+     * @param parent   Rodzic widoku.
+     * @param viewType Typ widoku.
+     * @return Nowy widok RecyclerView.
      */
+    private final List<String> busLines;
+    private final OnLineClickListener listener;
+
     public interface OnLineClickListener {
-        /**
-         * Called when a bus line is clicked.
-         *
-         * @param line The bus line that was clicked.
-         */
         void onLineClick(String line);
     }
 
     /**
-     * The list of bus lines to display in the RecyclerView.
+     * @param busLines Lista linii autobusowych.
+     * @brief Konstruktor klasy BusLinesAdapter.
+     * <p>
+     * Inicjalizuje listę linii autobusowych.
      */
-    private final List<String> busLines;
 
-    /**
-     * The listener for handling bus line click events.
-     */
-    private final OnLineClickListener listener;
-
-    /**
-     * Constructor for BusLinesAdapter.
-     *
-     * @param busLines The list of bus lines to display.
-     * @param listener The listener for handling click events on bus lines.
-     */
     public BusLinesAdapter(List<String> busLines, OnLineClickListener listener) {
         this.busLines = busLines;
         this.listener = listener;
     }
 
     /**
-     * Called when RecyclerView needs a new {@link ViewHolder} of the given type to represent an item.
-     *
-     * @param parent   The ViewGroup into which the new View will be added after it is bound to an adapter position.
-     * @param viewType The view type of the new View.
-     * @return A new {@link ViewHolder} that holds a View of the given view type.
+     * @param parent   Widok nadrzędny.
+     * @param viewType Typ widoku.
+     * @return Nowo utworzony ViewHolder.
+     * @brief Tworzy nowy widok elementu listy.
      */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the simple_list_item_1 layout for each bus line item
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(android.R.layout.simple_list_item_1, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
         return new ViewHolder(view);
     }
 
     /**
-     * Called by RecyclerView to display the data at the specified position.
-     *
-     * This method updates the contents of the {@link ViewHolder#textView} to reflect the bus line
-     * at the given position and sets up a click listener to handle user interactions.
-     *
-     * @param holder   The {@link ViewHolder} which should be updated to represent the contents of the item at the given position.
-     * @param position The position of the item within the adapter's data set.
+     * @param holder   Obiekt ViewHolder do aktualizacji.
+     * @param position Pozycja elementu na liście.
+     * @brief Łączy dane z odpowiednim widokiem elementu listy.
+     * <p>
+     * Wiąże dane z linią autobusową do widoku.
+     * Metoda ustawia dane wyświetlane w poszczególnych elementach listy.
      */
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.busLineName.setText(busLines.get(position));
+    }
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String line = busLines.get(position);
@@ -96,9 +92,9 @@ public class BusLinesAdapter extends RecyclerView.Adapter<BusLinesAdapter.ViewHo
     }
 
     /**
-     * Returns the total number of items in the data set held by the adapter.
+     * Zwraca liczbę elementów w liście.
      *
-     * @return The total number of bus lines.
+     * @return Liczba elementów w RecyclerView.
      */
     @Override
     public int getItemCount() {
@@ -106,21 +102,19 @@ public class BusLinesAdapter extends RecyclerView.Adapter<BusLinesAdapter.ViewHo
     }
 
     /**
-     * {@link ViewHolder} class for BusLinesAdapter.
-     *
-     * This inner class holds references to the views for each bus line item in the RecyclerView.
+     * @class ViewHolder
+     * @brief Klasa wewnętrzna obsługująca elementy listy.
      */
+
     static class ViewHolder extends RecyclerView.ViewHolder {
-        /**
-         * TextView that displays the bus line.
-         */
         TextView textView;
 
         /**
-         * Constructor for ViewHolder.
+         * Inicjalizuje widok elementu listy.
          *
-         * @param itemView The view of the bus line item.
+         * @param itemView Widok elementu listy.
          */
+
         ViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(android.R.id.text1);

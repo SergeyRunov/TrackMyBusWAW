@@ -28,35 +28,22 @@ import pl.creativesstudio.models.Bus;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-/**
- * @file MainActivityTest.java
- * @brief Unit tests for the MainActivity class in the TrackMyBusWAW application.
- *
- * This class contains unit tests that verify the functionality of the MainActivity class,
- * including sorting bus lines, filtering buses within map bounds, filtering by bus line,
- * and formatting timestamps.
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- *
- * @version 1.0
- * @since 2024-12-16
- */
+
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.O_MR1)
+/**
+ * Test jednostkowy dla aktywności głównej aplikacji TrackMyBusWAW.
+ * Sprawdza interakcje i poprawność logiki.
+ *
+ * @version 1.1
+ * @since 2024-12-16
+ */
+
 public class MainActivityTest {
-    /**
-     * Instance of MainActivity to be tested.
-     */
     private MainActivity mainActivity;
-    /**
-     * List of test bus data used in the unit tests.
-     */
     private List<Bus> testBuses;
     /**
-     * Sets up the test environment before each test method.
-     *
-     * Initializes the MainActivity instance and creates sample Bus objects
-     * to be used in the tests.
+     * Inicjalizuje zasoby przed każdym testem.
      */
     @Before
     public void setUp() {
@@ -64,7 +51,7 @@ public class MainActivityTest {
 
         Drawable mockDrawable = new ColorDrawable(Color.RED);
 
-
+        // Create test bus data using setters
         testBuses = new ArrayList<>();
 
         Bus bus1 = new Bus();
@@ -95,10 +82,7 @@ public class MainActivityTest {
         testBuses.add(bus3);
     }
     /**
-     * Tests the sorting functionality of bus lines.
-     *
-     * This test verifies that the sortBusLines method correctly sorts a list of
-     * unsorted bus lines according to the defined sorting logic.
+     * Testuje, czy linie autobusowe są poprawnie sortowane.
      */
     @Test
     public void testSortBusLines() {
@@ -110,17 +94,14 @@ public class MainActivityTest {
 
         List<String> sortedLines = mainActivity.sortBusLines(unsortedLines);
 
-
+        // Verify sorted order
         assertEquals("20", sortedLines.get(0));
         assertEquals("34", sortedLines.get(1));
         assertEquals("200", sortedLines.get(2));
         assertEquals("N61", sortedLines.get(3));
     }
     /**
-     * Tests the filtering of buses within the visible map bounds.
-     *
-     * This test ensures that the filterBusesWithinBounds method correctly
-     * identifies and returns buses that are within the specified LatLngBounds.
+     * Testuje filtrowanie autobusów w obrębie określonych granic.
      */
     @Test
     public void testFilterBusesWithinBounds() {
@@ -133,16 +114,14 @@ public class MainActivityTest {
 
         List<Bus> filteredBuses = mainActivity.filterBusesWithinBounds(testBuses);
 
-
+        // Verify that filtering works (the exact behavior depends on your implementation)
         assertNotNull(filteredBuses);
         assertEquals(3, filteredBuses.size());
     }
     /**
-     * Tests the filtering of buses by a specific bus line.
-     *
-     * This test verifies that buses are correctly filtered based on the provided
-     * bus line identifier.
+     * Testuje formatowanie znacznika czasu.
      */
+
     @Test
     public void testFilterByLine() {
         // Test filtering buses by line
@@ -153,20 +132,16 @@ public class MainActivityTest {
             }
         }
 
+        // Verify line filtering
         assertEquals(2, filteredBuses.size());
         for (Bus bus : filteredBuses) {
             assertEquals("123", bus.getLines());
         }
     }
-    /**
-     * Tests the formatting of timestamps into readable date-time strings.
-     *
-     * This test uses reflection to access the private formatTimestamp method and
-     * verifies that it correctly formats a given timestamp.
-     */
+
     @Test
     public void testFormatTimestamp() {
-
+        // Use reflection to call the private method
         try {
             java.lang.reflect.Method method = MainActivity.class.getDeclaredMethod("formatTimestamp", long.class);
             method.setAccessible(true);
@@ -181,12 +156,9 @@ public class MainActivityTest {
             fail("Exception in testFormatTimestamp: " + e.getMessage());
         }
     }
-//    /**
-//     * Tests the onMapReady method to ensure that the GoogleMap is initialized correctly.
-//     *
-//     * This test uses Mockito to mock the GoogleMap instance and verifies that
-//     * location services are enabled and the camera is moved to the default location.
-//     */
+/**
+ * Testuje poprawność inicjalizacji mapy.
+ */
 
 //    @Test
 //    public void testOnMapReady() {

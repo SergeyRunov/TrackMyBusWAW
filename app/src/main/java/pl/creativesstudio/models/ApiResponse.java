@@ -1,40 +1,29 @@
-/**
- * @file ApiResponse.java
- * @brief Represents the response from the Warsaw bus system API.
- *
- * This class stores the data returned by the API, specifically a list of buses.
- *
- * @version 1.0
- * @since 2024-12-16
- */
 package pl.creativesstudio.models;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 /**
- * Represents the response from the Warsaw bus system API.
- * Stores the data returned by the API, specifically a list of buses.
+ * Reprezentuje odpowiedź API Warszawa.
+ * Przechowuje dane zwracane przez API, które są wykorzystywane przez aplikację.
  *
  * @version 1.0
  * @since 2024-12-16
  */
+
 public class ApiResponse {
-    /**
-     * The list of buses returned by the API.
-     */
     @SerializedName("result")
     private List<Bus> result;
-    /**
-     * Retrieves the list of buses from the API response.
-     *
-     * @return A list of {@link Bus} objects representing the buses.
-     */
 
+    /**
+     * Zwraca wynik odpowiedzi API.
+     *
+     * @return Obiekt wynikowy odpowiedzi API.
+     */
     public List<Bus> getResult() { return result; }
     /**
-     * Sets the list of buses in the API response.
+     * Ustawia wynik odpowiedzi API.
      *
-     * @param result A list of {@link Bus} objects to set as the API response.
+     * @param result Obiekt wynikowy odpowiedzi API.
      */
     public void setResult(List<Bus> result) { this.result = result; }
 }

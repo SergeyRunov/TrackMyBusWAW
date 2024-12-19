@@ -1,13 +1,9 @@
+
 /**
  * @file MainActivity.java
- * @brief Main activity for the TrackMyBusWAW application.
+ * @brief Główna aktywność aplikacji TrackMyBusWAW.
  *
- * This activity handles the display and interaction with the Google Map,
- * manages bus data retrieval from the Warsaw API, and provides UI components
- * such as the menu and location buttons.
- *
- * @version 1.1
- * @since 2024-12-16
+ * Obsługuje główny interfejs użytkownika oraz podstawowe operacje aplikacji.
  */
 package pl.creativesstudio;
 
@@ -51,14 +47,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 /**
- * Main activity for the TrackMyBusWAW application.
- * Handles map initialization, location services, data retrieval from the API,
- * and user interactions such as menu and location buttons.
+ * Główna aktywność aplikacji TrackMyBusWAW.
+ * Odpowiada za wyświetlanie mapy, interakcję użytkownika oraz
+ * zarządzanie danymi pobieranymi z API Warszawa.
  *
- * @version 1.1
+ * @version 1.0
  * @since 2024-12-16
  */
+
+public class MainActivity extends AppCompatActivity {
 public class MainActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
@@ -66,120 +65,57 @@ public class MainActivity extends AppCompatActivity
         GoogleMap.OnCameraIdleListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
-    /**
-     * GoogleMap instance representing the map in the activity.
-     */
-    GoogleMap mMap;
 
-    /**
-     * Request code for location permission.
-     */
+    GoogleMap mMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    /**
-     * Current center of the map.
-     */
     private LatLng currentMapCenter;
-    /**
-     * Current visible bounds of the map.
-     */
     LatLngBounds visibleBounds;
-    /**
-     * Service for interacting with the Warsaw API.
-     */
+
     private WarsawApiService apiService;
-    /**
-     * Base URL for the Warsaw API.
-     */
     private static final String BASE_URL = "https://api.um.warszawa.pl/";
-    /**
-     * API key for authenticating requests to the Warsaw API.
-     */
     private static final String API_KEY = "3fb6fadd-9c21-43fc-998b-c41cc14663ff";
-    /**
-     * Resource ID for the buses/trams API endpoint.
-     */
     private static final String RESOURCE_ID = "f2e5503e-927d-4ad3-9500-4ab9e55deb59";
-    /**
-     * Handler for managing delayed and periodic tasks.
-     */
 
     private Handler handler = new Handler();
-    /**
-     * Runnable for periodic data refresh.
-     */
     private Runnable runnable;
-    /**
-     * Runnable for map updates with a delay.
-     */
     private Runnable mapUpdateRunnable;
-    /**
-     * Delay for map updates in milliseconds.
-     */
-    private static final long MAP_UPDATE_DELAY = 1000;
-    /**
-     * Data refresh interval when zoomed in, in milliseconds.
-     */
-    private static final long DATA_REFRESH_INTERVAL_HIGH_ZOOM = 5000;
-    /**
-     * Data refresh interval when zoomed out, in milliseconds.
-     */
-    private static final long DATA_REFRESH_INTERVAL_LOW_ZOOM = 15000;
-    /**
-     * Default data refresh interval, in milliseconds.
-     */
-    private static final long DATA_REFRESH_INTERVAL_DEFAULT = 10000;
-    /**
-     * Minimum interval between API calls, in milliseconds.
-     */
-    private static final long MIN_API_CALL_INTERVAL = 5000;
-    /**
-     * Minimum zoom level to display bus data.
-     */
-    private static final float MIN_ZOOM_LEVEL = 14.0f;
-    /**
-     * Map of active markers on the map, keyed by bus ID.
-     */
+    private static final long MAP_UPDATE_DELAY = 1000; // 1 sekunda opóźnienia
+    private static final long DATA_REFRESH_INTERVAL_HIGH_ZOOM = 5000; // 5 sekund
+    private static final long DATA_REFRESH_INTERVAL_LOW_ZOOM = 15000; // 15 sekund
+    private static final long DATA_REFRESH_INTERVAL_DEFAULT = 10000; // 10 sekund
+    private static final long MIN_API_CALL_INTERVAL = 5000; // Minimalny odstęp między zapytaniami (5 sekund)
+
+    private static final float MIN_ZOOM_LEVEL = 14.0f; // Minimalny poziom powiększenia
+
     private Map<String, Marker> activeMarkers = new HashMap<>();
-    /**
-     * ID of the currently selected bus.
-     */
     private String selectedBusId = null;
-    /**
-     * List of the last loaded buses.
-     */
     private List<Bus> lastLoadedBuses = new ArrayList<>();
-    /**
-     * Timestamp of the last API call.
-     */
     private long lastApiCallTime = 0;
-    /**
-     * Flag indicating if it's the initial data load.
-     */
     private boolean isInitialLoad = true;
-    /**
-     * Executor service for handling background tasks.
-     */
     private ExecutorService executorService;
-    /**
-     * Flag indicating if a specific bus line is selected.
-     */
     private boolean lineSelected = false;
-    /**
-     * Called when the activity is first created.
-     *
-     * Initializes UI components, sets up map fragment, and configures Retrofit for API interactions.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
-     *                           then this Bundle contains the data it most recently supplied.
-     */
     List<Bus> allBuses = new ArrayList<>();
+
+    /**
+     * @brief Inicjalizuje interfejs użytkownika.
+     *
+     * Metoda wywoływana podczas uruchomienia aplikacji. Ustawia główny
+     * widok aplikacji i inicjalizuje niezbędne komponenty.
+     *
+     * @param savedInstanceState Stan aplikacji zapisany podczas poprzedniego uruchomienia.
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        // Obsługa przycisku menu
         ImageButton buttonMenu = findViewById(R.id.button_menu);
         buttonMenu.setOnClickListener(v -> showBottomSheetWithLines());
 
@@ -200,20 +136,20 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
             } else {
-
+                // Brak uprawnień do lokalizacji
                 Toast.makeText(MainActivity.this, "Brak uprawnień do pobrania lokalizacji", Toast.LENGTH_SHORT).show();
             }
         });
 
 
-
+        // Inicjalizacja mapy
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.id_map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
 
-
+        // Inicjalizacja Retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -223,9 +159,7 @@ public class MainActivity extends AppCompatActivity
 
         executorService = Executors.newSingleThreadExecutor();
     }
-    /**
-     * Displays the bottom sheet dialog containing the list of bus lines.
-     */
+
     void showBottomSheetWithLines() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_lines, null);
@@ -234,22 +168,23 @@ public class MainActivity extends AppCompatActivity
         RecyclerView recyclerView = bottomSheetView.findViewById(R.id.recycler_view_lines);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-
+        // Przygotuj dane (linie autobusowe) korzystając z allBuses
         List<String> busLines = new ArrayList<>();
-
+        // Dodaj najpierw "POKAŻ WSZYSTKIE AUTOBUSY"
         busLines.add("POKAŻ WSZYSTKIE AUTOBUSY");
 
-
+        // Zbierz wszystkie unikalne linie z allBuses
         for (Bus bus : allBuses) {
             if (!busLines.contains(bus.getLines())) {
                 busLines.add(bus.getLines());
             }
         }
 
-
+        // Posortuj linie (poza pierwszym elementem, który jest specjalny)
+        // Możesz posortować podlistę od 1 indeksu:
         List<String> linesToSort = busLines.subList(1, busLines.size());
         linesToSort = sortBusLines(linesToSort);
-
+        // Nadpisz posortowaną część
         for (int i = 1; i < busLines.size(); i++) {
             busLines.set(i, linesToSort.get(i - 1));
         }
@@ -257,19 +192,20 @@ public class MainActivity extends AppCompatActivity
         BusLinesAdapter adapter = new BusLinesAdapter(busLines, line -> {
             bottomSheetDialog.dismiss();
             if (line.equals("POKAŻ WSZYSTKIE AUTOBUSY")) {
-
+                // Użytkownik chce wrócić do wyświetlania wszystkich autobusów
                 lineSelected = false;
-
+                // Przywróć pełną listę autobusów
                 lastLoadedBuses = new ArrayList<>(allBuses);
 
                 Toast.makeText(MainActivity.this, "Wybrano: POKAŻ WSZYSTKIE AUTOBUSY", Toast.LENGTH_SHORT).show();
 
-
+                // Wycentruj mapę na obecną lokalizację użytkownika, jeśli jest dostępna
+                // Lub na obecną lokalizację mapy jeśli brak informacji o użytkowniku
                 if (currentMapCenter != null) {
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentMapCenter, 15f));
                 }
 
-
+                // Wyświetl wszystkie autobusy
                 displayBusesOnMap(lastLoadedBuses);
             } else {
                 Toast.makeText(MainActivity.this, "Wybrano linię: " + line, Toast.LENGTH_SHORT).show();
@@ -281,44 +217,35 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setAdapter(adapter);
         bottomSheetDialog.show();
     }
-    /**
-     * Sorts the list of bus lines using a custom comparator.
-     *
-     * @param lines The list of bus lines to sort.
-     * @return The sorted list of bus lines.
-     */
+
     List<String> sortBusLines(List<String> lines) {
-
+        // Niestandardowy komparator dla linii autobusowych
         lines.sort((line1, line2) -> {
-
+            // Rozdziel numery i litery w liniach
             String numberPart1 = line1.replaceAll("[^0-9]", ""); // Wyodrębnij część numeryczną
             String numberPart2 = line2.replaceAll("[^0-9]", "");
 
             String letterPart1 = line1.replaceAll("[0-9]", ""); // Wyodrębnij część literową
             String letterPart2 = line2.replaceAll("[0-9]", "");
 
-
+            // Najpierw porównaj część literową (alfabetycznie)
             int letterComparison = letterPart1.compareTo(letterPart2);
             if (letterComparison != 0) {
                 return letterComparison;
             }
 
-
+            // Jeśli litery są takie same, porównaj numery (liczbowo)
             if (!numberPart1.isEmpty() && !numberPart2.isEmpty()) {
                 return Integer.compare(Integer.parseInt(numberPart1), Integer.parseInt(numberPart2));
             }
 
-
+            // W przypadku braku numerów porównaj pełne linie (zapewnia stabilność)
             return line1.compareTo(line2);
         });
 
         return lines;
     }
-    /**
-     * Filters buses by the specified line and zooms the map to show them.
-     *
-     * @param line The bus line to filter by.
-     */
+
     void filterAndZoomToLine(String line) {
         if (mMap == null || allBuses.isEmpty()) return;
 
@@ -334,7 +261,8 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-
+        // Nie nadpisuj lastLoadedBuses, to pozwoli nam wrócić do pełnej listy w przyszłości
+        // Po prostu wyświetl przefiltrowane autobusy
         displayBusesOnMap(filteredBuses);
 
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
@@ -344,14 +272,13 @@ public class MainActivity extends AppCompatActivity
         LatLngBounds bounds = boundsBuilder.build();
         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
     }
+
     /**
-     * Called when the map is ready to be used.
+     * Funkcja wywoływana po załadowaniu mapy Google.
      *
-     * Initializes map settings, enables location if permissions are granted,
-     * sets up UI controls, and starts the data refresh handler.
-     *
-     * @param googleMap The GoogleMap object.
+     * @param googleMap Instancja mapy Google.
      */
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -416,20 +343,13 @@ public class MainActivity extends AppCompatActivity
         };
         handler.postDelayed(runnable, DATA_REFRESH_INTERVAL_HIGH_ZOOM);
     }
-    /**
-     * Updates the visible bounds of the map based on the current camera position.
-     */
+
     private void updateVisibleBounds() {
         if (mMap != null) {
             visibleBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
         }
     }
-    /**
-     * Called when the camera movement has stopped and the map is idle.
-     *
-     * Updates the current map center and visible bounds,
-     * schedules a map update after a delay.
-     */
+
     @Override
     public void onCameraIdle() {
         if (mMap == null) return;
@@ -449,12 +369,7 @@ public class MainActivity extends AppCompatActivity
         };
         handler.postDelayed(mapUpdateRunnable, MAP_UPDATE_DELAY);
     }
-    /**
-     * Updates the map with the current data based on zoom level and visibility.
-     *
-     * Filters buses within the visible bounds and displays them.
-     * Manages data refresh intervals based on zoom level.
-     */
+
     private void updateMapWithCurrentData() {
         if (mMap == null) return;
         if (lineSelected) return;
@@ -484,12 +399,7 @@ public class MainActivity extends AppCompatActivity
             isInitialLoad = false;
         }
     }
-    /**
-     * Filters the list of buses to include only those within the visible map bounds.
-     *
-     * @param allBuses The complete list of buses.
-     * @return A list of buses within the visible bounds.
-     */
+
     List<Bus> filterBusesWithinBounds(List<Bus> allBuses) {
         List<Bus> visibleBuses = new ArrayList<>();
         if (visibleBounds != null) {
@@ -502,11 +412,11 @@ public class MainActivity extends AppCompatActivity
         }
         return visibleBuses;
     }
+
     /**
-     * Loads bus data from the API.
-     *
-     * @param forced If true, forces data loading regardless of the last API call time.
+     * Pobiera dane o autobusach z API Warszawa i aktualizuje widok mapy.
      */
+
     private void loadBusData(boolean forced) {
         long currentTime = System.currentTimeMillis();
         if (!forced && currentTime - lastApiCallTime < MIN_API_CALL_INTERVAL) {
@@ -514,7 +424,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (visibleBounds == null) {
-            return;
+            return; // Nie ma dostępnych granic, więc nie ładuj danych
         }
 
         double minLat = visibleBounds.southwest.latitude;
@@ -534,7 +444,7 @@ public class MainActivity extends AppCompatActivity
                 //         maxLon
                 // );
 
-
+                // Jeśli API nie wspiera, użyj istniejącego wywołania
                 Call<ApiResponse> call = apiService.getBuses(
                         RESOURCE_ID,
                         API_KEY,
@@ -552,7 +462,7 @@ public class MainActivity extends AppCompatActivity
                     lastLoadedBuses = new ArrayList<>(result);
 
                     if (result == null || result.isEmpty()) {
-
+                        // Brak danych: Wyświetl ostatnio pobrane dane
                         runOnUiThread(() -> {
                             if (!lastLoadedBuses.isEmpty()) {
                                 Toast.makeText(MainActivity.this, "Brak nowych danych. Wyświetlam ostatnio pobrane dane z czasu: "
@@ -563,7 +473,7 @@ public class MainActivity extends AppCompatActivity
                             }
                         });
                     } else {
-
+                        // Nowe dane zostały poprawnie pobrane
                         lastLoadedBuses = result;
                         lastApiCallTime = currentTime;
 
@@ -573,7 +483,7 @@ public class MainActivity extends AppCompatActivity
                         });
                     }
                 } else {
-
+                    // Błąd w odpowiedzi API: Wyświetl ostatnio pobrane dane
                     runOnUiThread(() -> {
                         if (!lastLoadedBuses.isEmpty()) {
                             Toast.makeText(MainActivity.this, "Błąd API. Wyświetlam ostatnio pobrane dane z czasu: "
@@ -598,28 +508,22 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-    /**
-     * Formats a timestamp into a readable date-time string.
-     *
-     * @param timestamp The timestamp to format.
-     * @return A formatted date-time string.
-     */
+
     private String formatTimestamp(long timestamp) {
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         java.util.Date date = new java.util.Date(timestamp);
         return sdf.format(date);
     }
-    /**
-     * Displays the list of buses on the map by adding markers.
-     *
-     * @param buses The list of buses to display.
-     */
+
     private void displayBusesOnMap(List<Bus> buses) {
         if (mMap == null) return;
 
+        // Najpierw wyczyść istniejące markery
         mMap.clear();
 
-
+        // Dodaj marker początkowy
+//        LatLng initialLocation = new LatLng(52.2881717, 21.0061544);
+//        mMap.addMarker(new MarkerOptions().position(initialLocation).title("WSB Merito"));
 
         activeMarkers.clear();
         for (Bus bus : buses) {
@@ -648,12 +552,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-    /**
-     * Creates a custom marker icon with the bus line text.
-     *
-     * @param line The bus line to display on the marker.
-     * @return A BitmapDescriptor representing the custom marker icon.
-     */
+
     private BitmapDescriptor createCustomMarker(String line) {
         Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextSize(50);
@@ -669,7 +568,7 @@ public class MainActivity extends AppCompatActivity
         int textWidth = textBounds.width() + 20;
         int textHeight = textBounds.height() + 20;
 
-
+        // Rozmiar pinezki
         int pinWidth = 124;
         int pinHeight = 212;
 
@@ -679,13 +578,13 @@ public class MainActivity extends AppCompatActivity
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
 
-
+        // Rysuj tło dla tekstu
         canvas.drawRect(0, 0, width, textHeight, backgroundPaint);
 
-
+        // Rysuj tekst w centrum
         canvas.drawText(line, width / 2, textHeight - 10, textPaint);
 
-
+        // Rysuj ikonę pinezki poniżej tekstu
         Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_marker_icon);
         if (drawable != null) {
             drawable.setBounds((width - pinWidth) / 2, textHeight, (width + pinWidth) / 2, height);
@@ -694,38 +593,18 @@ public class MainActivity extends AppCompatActivity
 
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
-    /**
-     * Called when the user's current location is clicked on the map.
-     *
-     * Displays a toast with the user's location information.
-     *
-     * @param location The user's current location.
-     */
+
     @Override
     public void onMyLocationClick(@NonNull Location location) {
         Toast.makeText(this, "Obecna lokalizacja:\n" + location, Toast.LENGTH_SHORT).show();
     }
-    /**
-     * Called when the My Location button is clicked on the map.
-     *
-     * Displays a toast indicating location detection and allows the default behavior.
-     *
-     * @return False to indicate that the default behavior should occur.
-     */
+
     @Override
     public boolean onMyLocationButtonClick() {
         Toast.makeText(this, "Wykrywanie lokalizacji", Toast.LENGTH_SHORT).show();
         return false;
     }
-    /**
-     * Handles the result of permission requests.
-     *
-     * Specifically handles the result for location permission requests.
-     *
-     * @param requestCode  The request code passed in {@link ActivityCompat#requestPermissions}.
-     * @param permissions  The requested permissions.
-     * @param grantResults The grant results for the corresponding permissions.
-     */
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -741,11 +620,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-    /**
-     * Called when the activity is destroyed.
-     *
-     * Cleans up handlers and executor services to prevent memory leaks.
-     */
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
